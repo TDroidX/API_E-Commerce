@@ -1,17 +1,21 @@
-let DB = require('mysql');
+const mysql = require('mysql2');
 
-let conection = DB.createConnection({
-    host: 'localhost',
-    database: 'sucursal',
-    user:'root',
-    password: '',
-    port: 3306
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root', 
+  password: '', 
+  database: 'polainas_candies' 
 });
 
-conection.conect(function(err){
-    if(err){
-        console.log(err)
-    }else{
-        console.log('Conection succesfull');
-    }
+connection.connect((err) => {
+  if (err) {
+    console.error('Error al conectar la BD: ', err.stack);
+    return;
+  }
+  else{
+    console.log('Conexion exitosa ');
+  }
+  
 });
+
+module.exports = connection;

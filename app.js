@@ -1,15 +1,17 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const connection = require ('./src/conectionDB.js');
 
 const app = express();
 const port = 3000;
-//const routerAdmin=require("./routes/adminRoutes.js");
-//const routerCarrito=require("./routes/carritoRoutes.js");
-//const routerCliente=require("./routes/clienteRoutes.js");
-//const routerCompras=require("./routes/comprasRoutes.js");
-//const routerProductos=require("./routes/productosRoutes.js");
-//const routerSucursal=require("./routes/sucursalRoutes.js");
+
+//const routerAdmin=require("./src/routes/adminRoutes.js");
+//const routerCarrito=require("./src/routes/carritoRoutes.js");
+//const routerCliente=require("./src/routes/clienteRoutes.js");
+//const routerCompras=require("./src/routes/comprasRoutes.js");
+//const routerProductos=require("./src/routes/productosRoutes.js");
+const routerSucursal=require("./src/routes/sucursalRoutes");
 
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended:false}));
