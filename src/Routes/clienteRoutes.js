@@ -9,3 +9,5 @@ router.get('/find/:id', clienteController.find);
 // router.get('/edit/:id', clienteController.edit)
 router.put('/update/:id', clienteController.update);
 router.delete('/destroy/:id', clienteController.destroy);
+
+module.exports = router;

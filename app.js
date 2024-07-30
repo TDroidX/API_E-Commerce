@@ -2,16 +2,17 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const sequelize = require('./src/conectionDB')
+const bodyParser = require('body-parser')
 
 const app = express();
 const port = 3000;
 //const routerAdmin=require("./routes/adminRoutes.js");
 //const routerCarrito=require("./routes/carritoRoutes.js");
-const routerCliente=require("./routes/clienteRoutes.js");
+const routerCliente=require("./src/Routes/clienteRoutes");
 //const routerCompras=require("./routes/comprasRoutes.js");
 //const routerProductos=require("./routes/productosRoutes.js");
 //const routerSucursal=require("./routes/sucursalRoutes.js");
-
+app.use(bodyParser.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended:false}));
 app.use(express.json());
@@ -33,7 +34,7 @@ app.use('/api/cliente',routerCliente);
 //app.use('/api/sucursal',routerSucursal);
 
 app.use((req, res) => {
-    es.status(404).send("Nada que mostrar el servidor")
+    res.status(404).send("Nada que mostrar el servidor")
 });
 
 app.listen(port, () =>{

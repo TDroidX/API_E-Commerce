@@ -7,10 +7,10 @@ const sequelize = new Sequelize('sucursal', 'root', '', {
 
 sequelize.authenticate()
     .then(() => {
-        console.log('Connection has been established successfully.');
+        console.log('Conexión a la base de datos exitosa');
     })
     .catch(err => {
-        console.error('Unable to connect to the database:', err);
+        console.error('No se pudo conectar a la base de datos', err);
     });
 
 module.exports = sequelize;
