@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const sequelize = require('./src/conectionDB')
 
 const app = express();
 const port = 3000;
@@ -15,6 +16,14 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({extended:false}));
 app.use(express.json());
 app.use(cors({origen:'*'}));
+
+sequelize.sync()
+.then(() => {
+    console.log('Database synchronized');
+})
+.catch(err => {
+    console.error('Error synchronizing the database:', err);
+});
 
 //app.use('/api/administrador', routerAdmin);
 //app.use('/api/carrito',routerCarrito);
