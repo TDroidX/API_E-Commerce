@@ -23,7 +23,7 @@ app.use(cors({origen:'*'}));
 //app.use('/api/cliente',routerCliente);
 //app.use('/api/compras',routerCompras);
 //app.use('/api/productos',routerProductos);
-//app.use('/api/sucursal',routerSucursal);
+app.use('/api/sucursal',routerSucursal);
 
 app.use((req, res) => {
     es.status(404).send("Nada que mostrar el servidor")
