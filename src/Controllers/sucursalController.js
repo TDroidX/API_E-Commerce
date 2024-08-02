@@ -2,6 +2,7 @@ const connection = require('../conectionDB.js');
 const Sucursal = require('../models/sucursalModel.js');
 const message = require('../utils/messages.js');
 const {messageGeneral} = message;
+const { Op } = require('sequelize');
 const valNombre = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{5,50}$/;
 const valCalle = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{5,50}$/;
 const valNumero = /^[0-9]{1,4}$/;
@@ -116,16 +117,83 @@ exports.obtenerSucursalPorId = async (req, res) => {
 // Actualizar una sucursal
 exports.actualizarSucursal = async (req, res) => {
     try {
+
+        const data = req.body;
+        const sucursalExistente = await Sucursal.findByPk(req.params.id);
+
+        if (sucursalExistente) {
+    
+        const allowedFields = ['Nombre', 'Calle', 'Numero', 'Colonia', 'Localidad', 'Municipio', 'CP', 'Telefono', 'Tipo'];
+
+        const invalidFields = Object.keys(data).filter(field => !allowedFields.includes(field));
+        if (invalidFields.length > 0) {
+            return messageGeneral(res, 400, false, "", `Campos no permitidos: ${invalidFields.join(', ')}`);
+        }
+
+        for (const field of allowedFields) {
+            if (!data[field] || data[field].trim() === "") {
+                return messageGeneral(res, 400, false, "", `El campo ${field} no puede estar vacío.`);
+            }
+        }
+
+        if (!valNombre.test(data.Nombre)) {
+            return messageGeneral(res, 400, false, "", "El campo Nombre es inválido, debe contener entre 5 y 50 letras, sin números o caracteres especiales.");
+        }
+
+        if (!valCalle.test(data.Calle)) {
+            return messageGeneral(res, 400, false, "", "El campo Calle es inválido, debe contener entre 5 y 50 letras, sin números o caracteres especiales.");
+        }
+
+        if (!valNumero.test(data.Numero)) {
+            return messageGeneral(res, 400, false, "", "El campo Número es inválido, debe ser numérico y tener entre 1 y 4 dígitos.");
+        }
+
+        if (!valColonia.test(data.Colonia)) {
+            return messageGeneral(res, 400, false, "", "El campo Colonia es inválido, debe contener entre 5 y 50 letras, sin números o caracteres especiales.");
+        }
+
+        if (!valLocalidad.test(data.Localidad)) {
+            return messageGeneral(res, 400, false, "", "El campo Localidad es inválido, debe contener entre 5 y 50 letras, sin números o caracteres especiales.");
+        }
+
+        if (!valMunicipio.test(data.Municipio)) {
+            return messageGeneral(res, 400, false, "", "El campo Municipio es inválido, debe contener entre 5 y 50 letras, sin números o caracteres especiales.");
+        }
+
+        if (!valCP.test(data.CP)) {
+            return messageGeneral(res, 400, false, "", "El campo Código postal es inválido, debe ser numérico y tener exactamente 5 dígitos.");
+        }
+
+        if (!valTelefono.test(data.Telefono)) {
+            return messageGeneral(res, 400, false, "", "El número de teléfono es inválido, debe ser numérico y tener exactamente 10 dígitos.");
+        }
+
+        if (data.Telefono !== sucursalExistente.Telefono) {
+            const telefonoExistente = await Sucursal.findOne({
+                where: {
+                    Telefono: data.Telefono,
+                    IDSucursal: { [Op.ne]: req.params.id }
+                }
+            });
+        if (telefonoExistente) {
+                return messageGeneral(res, 400, false, "", "El número de teléfono ya existe.");
+            }
+        }
+
+        if (!valTipo.test(data.Tipo)) {
+            return messageGeneral(res, 400, false, "", "El campo Tipo es inválido, debe contener entre 6 y 8 letras, sin números o caracteres especiales.");
+        }
+
         const [actualizado] = await Sucursal.update(req.body, {
             where: { IDSucursal: req.params.id }
         });
-
-        if (actualizado) {
-            const sucursalActualizada = await Sucursal.findByPk(req.params.id);
-            res.json(sucursalActualizada);
-        } else {
-            res.status(404).json({ error: 'Sucursal no encontrada' });
-        }
+        console.log(actualizado);
+        const sucursalActualizada = await Sucursal.findByPk(req.params.id);
+        res.json(sucursalActualizada);
+    }
+    else {
+        res.status(404).json({ error: 'Sucursal no encontrada' });
+    }
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Error al actualizar la sucursal' });
@@ -138,9 +206,8 @@ exports.eliminarSucursal = async (req, res) => {
         const eliminado = await Sucursal.destroy({
             where: { IDSucursal: req.params.id }
         });
-
         if (eliminado) {
-            res.status(204).json({message: 'Sucursal eliminada'});
+            res.status(200).json({ message: 'Sucursal eliminada' });
         } else {
             res.status(404).json({ error: 'Sucursal no encontrada' });
         }
