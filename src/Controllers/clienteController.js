@@ -63,31 +63,7 @@ update = async (req, res) => {
 
         const { Email, Telefono, Usuario, Password, ...rest } = req.body;
 
-        // Validar si el nuevo email ya está en uso
-        if (Email && Email !== cliente.Email) {
-            const existingEmail = await Cliente.findOne({ where: { Email } });
-            if (existingEmail) {
-                return res.status(400).json({ error: 'El correo electrónico ya está en uso' });
-            }
-        }
-
-        // Validar si el nuevo teléfono ya está en uso
-        if (Telefono && Telefono !== cliente.Telefono) {
-            const existingTelefono = await Cliente.findOne({ where: { Telefono } });
-            if (existingTelefono) {
-                return res.status(400).json({ error: 'El teléfono ya está en uso' });
-            }
-        }
-
-        // Validar si el nuevo usuario ya está en uso
-        if (Usuario && Usuario !== cliente.Usuario) {
-            const existingUsuario = await Cliente.findOne({ where: { Usuario } });
-            if (existingUsuario) {
-                return res.status(400).json({ error: 'El usuario ya está en uso' });
-            }
-        }
-
-        // Si la nueva contraseña está presente en la solicitud, encriptarla
+        
         if (Password) {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(Password, salt);

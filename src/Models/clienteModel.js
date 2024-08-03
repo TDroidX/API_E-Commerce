@@ -62,6 +62,10 @@ const Cliente = sequelize.define('Cliente', {
         type: DataTypes.STRING(255),
         allowNull: false,
         unique: true
+    },
+    Rol: {
+        type:DataTypes.STRING,
+        defaultValue: 'cliente'
     }
 }, {
     tableName: 'cliente',
