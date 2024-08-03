@@ -13,6 +13,7 @@ const routerCliente=require("./src/Routes/clienteRoutes");
 //const routerCompras=require("./src/Routes/comprasRoutes.js");
 //const routerProductos=require("./src/Routes/productosRoutes.js");
 const routerSucursal=require("./src/Routes/sucursalRoutes");
+const routerLogin=require("./src/Routes/loginRoutes")
 
 app.use(bodyParser.json());
 app.use(morgan('dev'));
@@ -34,6 +35,7 @@ app.use('/api/cliente',routerCliente);
 //app.use('/api/compras',routerCompras);
 //app.use('/api/productos',routerProductos);
 app.use('/api/sucursal',routerSucursal);
+app.use('/api/sesion', routerLogin);
 
 app.use((req, res) => {
     res.status(404).send("Nada que mostrar el servidor")
