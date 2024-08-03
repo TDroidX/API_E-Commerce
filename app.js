@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const sequelize = require('./src/conectionDB')
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 
 const app = express();
 const port = 3000;
@@ -15,6 +16,7 @@ const routerCliente=require("./src/Routes/clienteRoutes");
 const routerSucursal=require("./src/Routes/sucursalRoutes");
 const routerLogin=require("./src/Routes/loginRoutes")
 
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended:false}));
