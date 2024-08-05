@@ -1,7 +1,7 @@
 const Cliente = require('../Models/clienteModel');
 const bcrypt = require('bcrypt')
 
-store = async (req, res) => {
+ const store = async (req, res) => {
     try {
         const { Usuario, Correo, Password, Telefono, ...rest } = req.body;
         
@@ -32,7 +32,7 @@ store = async (req, res) => {
     }
 };
 
-show = async (req, res) => {
+const show = async (req, res) => {
     try {
         const clientes = await Cliente.findAll();
         res.status(200).json(clientes);
@@ -41,7 +41,7 @@ show = async (req, res) => {
     }
 };
 
-find = async (req, res) => {
+const find = async (req, res) => {
     try {
         const cliente = await Cliente.findByPk(req.params.id);
         if (cliente) {
@@ -54,7 +54,7 @@ find = async (req, res) => {
     }
 };
 
-update = async (req, res) => {
+const update = async (req, res) => {
     try {
         const cliente = await Cliente.findByPk(req.params.id);
         if (!cliente) {
@@ -95,9 +95,12 @@ update = async (req, res) => {
     }
 };
 
-destroy = async (req, res) => {
+const destroy = async (req, res) => {
     try {
         const cliente = await Cliente.findByPk(req.params.id);
+        if(cliente.Rol === 'administrador'){
+            return res.status(400).json("No se puede eliminar un perfil de administrador")
+        }
         if (cliente) {
             await cliente.destroy();
             res.status(200).json({ message: 'El cliente ha sido eliminado.' });

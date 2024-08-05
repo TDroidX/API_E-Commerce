@@ -1,8 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const clienteController = require('../controllers/clienteController');
-const checkAuth = require('../middlewares/checkAuth')
 
+//Controllers
+const clienteController = require('../Controllers/clienteController');
+
+//middlewares
+const checkAuth = require('../middlewares/checkAuth')
+const checkRole = require('../middlewares/checkRole')
+
+//Routes
 // router.get('/create', clienteController.create)
 router.post('/store', clienteController.store);
 router.get('/show', clienteController.show);

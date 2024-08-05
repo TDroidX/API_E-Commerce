@@ -17,7 +17,7 @@ const login = async (req, res) => {
             return res.status(400).send('Contraseña incorrecta');
         }
 
-        const token = jwt.sign({ id: username.IDCliente }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: username.IDCliente, rol: username.Rol, usuario: username.Usuario }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.cookie('token', token, { httpOnly: true });
 
         res.status(200).send('Inicio de sesión exitoso');
