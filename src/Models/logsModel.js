@@ -25,8 +25,7 @@ const Log = sequelize.define('Log', {
         allowNull: false
     },
     fecha_hora: {
-        type: DataTypes.DATE,
-        allowNull: false
+        type: DataTypes.DATE
     }
 }, {
     tableName: 'logs',

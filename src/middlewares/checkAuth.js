@@ -12,6 +12,8 @@ const checkAuth = (req, res, next) => {
             return res.status(400).send('Token no válido. Inicia sesión');
         }
         req.id = decoded.id;
+        req.usuario = decoded.usuario;
+        req.rol = decoded.rol;
         next();
     });
 };
