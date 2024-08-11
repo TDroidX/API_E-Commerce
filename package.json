@@ -11,10 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
-<<<<<<< HEAD
-=======
     "body-parser": "^1.20.2",
->>>>>>> 87a1852c40672a0cf80b90ee4ed5886efbbb1df2
     "brcypt": "^1.0.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",

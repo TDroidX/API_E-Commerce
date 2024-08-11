@@ -8,7 +8,7 @@ const app = express();
 const port = 3000;
 
 //const routerAdmin=require("./src/Routes/adminRoutes.js");
-//const routerCarrito=require("./src/Routes/carritoRoutes.js");
+const routerCarrito=require("./src/Routes/carritoRoutes.js");
 const routerCliente=require("./src/Routes/clienteRoutes");
 //const routerCompras=require("./src/Routes/comprasRoutes.js");
 //const routerProductos=require("./src/Routes/productosRoutes.js");
@@ -16,7 +16,6 @@ const routerSucursal=require("./src/Routes/sucursalRoutes");
 
 app.use(bodyParser.json());
 app.use(morgan('dev'));
-app.use(express.urlencoded({extended:false}));
 app.use(express.json());
 app.use(cors({origen:'*'}));
 
@@ -29,7 +28,7 @@ sequelize.sync()
 });
 
 //app.use('/api/administrador', routerAdmin);
-//app.use('/api/carrito',routerCarrito);
+app.use('/api/carrito',routerCarrito);
 app.use('/api/cliente',routerCliente);
 //app.use('/api/compras',routerCompras);
 //app.use('/api/productos',routerProductos);

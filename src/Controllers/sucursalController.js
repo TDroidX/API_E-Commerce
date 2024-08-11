@@ -1,8 +1,8 @@
 const connection = require('../conectionDB.js');
 const Sucursal = require('../models/sucursalModel.js');
 const message = require('../utils/messages.js');
-const {messageGeneral} = message;
 const { Op } = require('sequelize');
+const {messageGeneral} = message;
 const valNombre = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{5,50}$/;
 const valCalle = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{5,50}$/;
 const valNumero = /^[0-9]{1,4}$/;
