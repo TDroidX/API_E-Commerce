@@ -1,5 +1,6 @@
 const Cliente = require('../Models/clienteModel');
 const bcrypt = require('bcrypt')
+const logger = require('../helpers/logger')
 
  const store = async (req, res) => {
     try {
@@ -25,6 +26,8 @@ const bcrypt = require('bcrypt')
         
         const clienteData = { Usuario, Correo, Password: hashedPassword, Telefono, ...rest };
         const cliente = await Cliente.create(clienteData);
+
+        logger.info({ usuario: 'sistema', rol: 'administrador' }, 'Se registró el usuario '+Usuario)
         
         res.status(201).json(cliente);
     } catch (error) {
