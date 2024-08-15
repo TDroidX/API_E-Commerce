@@ -12,7 +12,7 @@ const port = 3000;
 const routerCarrito=require("./src/Routes/carritoRoutes.js");
 const routerCliente=require("./src/Routes/clienteRoutes");
 //const routerCompras=require("./src/Routes/comprasRoutes.js");
-//const routerProductos=require("./src/Routes/productosRoutes.js");
+const routerProductos=require("./src/Routes/productosRoute");
 const routerSucursal=require("./src/Routes/sucursalRoutes");
 const routerLogin=require("./src/Routes/loginRoutes")
 
@@ -34,7 +34,7 @@ sequelize.sync()
 app.use('/api/carrito',routerCarrito);
 app.use('/api/cliente',routerCliente);
 //app.use('/api/compras',routerCompras);
-//app.use('/api/productos',routerProductos);
+app.use('/api/productos', routerProductos);
 app.use('/api/sucursal',routerSucursal);
 app.use('/api/sesion', routerLogin);
 

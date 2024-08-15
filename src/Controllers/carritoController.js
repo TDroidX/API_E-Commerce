@@ -1,7 +1,7 @@
 const connection = require('../conectionDB.js');
 const Carrito = require('../models/carritoModel.js');
 const Cliente = require('../models/clienteModel.js');
-const Productos = require('../models/productosModel.js');
+const Productos = require('../Models/productosModel.js');
 const message = require('../utils/messages.js');
 const {Op, sequelize, where} = require('sequelize');
 
