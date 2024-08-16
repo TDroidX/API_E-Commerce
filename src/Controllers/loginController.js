@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 const Cliente = require('../Models/clienteModel')
+const logger = require('../helpers/logger')
 require('dotenv').config()
 
 const login = async (req, res) => {
@@ -20,6 +21,8 @@ const login = async (req, res) => {
         const token = jwt.sign({ id: username.IDCliente, rol: username.Rol, usuario: username.Usuario }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.cookie('token', token, { httpOnly: true });
 
+        logger.info({ usuario: username.Usuario, rol: username.Rol }, 'El usuario '+username.Usuario+' inició sesión' )
+
         res.status(200).send('Inicio de sesión exitoso');
     } catch (err) {
         console.error(err.message);
@@ -28,6 +31,11 @@ const login = async (req, res) => {
 };
 
 const logout = (req, res) => {
+    const usuario = req.usuario;
+    const rol = req.rol;
+
+    logger.info({ usuario: usuario, rol: rol }, 'El usuario '+usuario+' cerró sesión')
+
     res.cookie('token', '', { expires: new Date(0) });
     res.send('Sesion finalizada')
 };

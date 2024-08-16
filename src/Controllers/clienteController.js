@@ -1,6 +1,7 @@
 const Cliente = require('../Models/clienteModel');
 const bcrypt = require('bcrypt')
 const logger = require('../helpers/logger')
+require('dotenv').config()
 
  const store = async (req, res) => {
     try {
@@ -58,6 +59,8 @@ const find = async (req, res) => {
 };
 
 const update = async (req, res) => {
+    const rol = req.rol;
+    const usuario = req.usuario; 
     try {
         const cliente = await Cliente.findByPk(req.params.id);
         if (!cliente) {
@@ -74,6 +77,8 @@ const update = async (req, res) => {
         }
 
         await cliente.update({ Email, Telefono, Usuario, ...rest });
+
+        logger.info({ usuario: usuario, rol: rol }, 'Se actualizaron los datos del usuario '+usuario)
 
         res.status(200).json(cliente);
     } catch (error) {
@@ -99,6 +104,8 @@ const update = async (req, res) => {
 };
 
 const destroy = async (req, res) => {
+    const rol = req.rol;
+    const usuario = req.usuario; 
     try {
         const cliente = await Cliente.findByPk(req.params.id);
         if(cliente.Rol === 'administrador'){
@@ -106,6 +113,7 @@ const destroy = async (req, res) => {
         }
         if (cliente) {
             await cliente.destroy();
+            logger.info({ usuario: usuario, rol: rol }, 'Se eliminó al usuario '+cliente.Usuario)
             res.status(200).json({ message: 'El cliente ha sido eliminado.' });
         } else {
             res.status(404).json({ error: 'Cliente no encontrado.' });

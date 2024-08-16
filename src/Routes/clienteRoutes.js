@@ -11,10 +11,10 @@ const checkRole = require('../middlewares/checkRole')
 //Routes
 // router.get('/create', clienteController.create)
 router.post('/store', clienteController.store);
-router.get('/show', clienteController.show);
-router.get('/find/:id', clienteController.find);
+router.get('/show', checkAuth, checkRole(['administrador']), clienteController.show);
+router.get('/find/:id', checkAuth, checkRole(['adminsitrador']), clienteController.find);
 // router.get('/edit/:id', clienteController.edit)
-router.put('/update/:id', clienteController.update);
-router.delete('/destroy/:id', clienteController.destroy);
+router.put('/update/:id', checkAuth, clienteController.update);
+router.delete('/destroy/:id', checkAuth, checkRole(['administrador']), clienteController.destroy);
 
 module.exports = router;

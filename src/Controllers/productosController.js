@@ -3,6 +3,7 @@ const Productos = require ('../Models/productosModel.js');
 const message = require('../utils/messages.js');
 const {messageGeneral} = message;
 const { Op } = require('sequelize');
+const logger = require('../helpers/logger.js')
 
 const valNombre = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{5,50}$/;
 const valDescripcion = /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s!@#$%^&*()_+\-=\\[\]{};':"`,.<>/?]{5,100}$/;
@@ -18,6 +19,9 @@ const valImagen = /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]{0,254}$/;
 // Crear un nuevo producto
 exports.crearProductos = async (req, res) => {
     try {
+        const usuario = req.usuario;
+        const rol = req.rol;
+
         const data = req.body;
         const imagen = req.file;  
 
@@ -91,6 +95,8 @@ exports.crearProductos = async (req, res) => {
             Imagen: imagen.filename 
         });
 
+        logger.info({ usuario: usuario, rol: rol }, 'Se registró el producto '+data.Nombre)
+
         res.status(201).json(nuevoProducto);
     } catch (error) {
         console.log(error); 
@@ -125,6 +131,9 @@ exports.obtenerProductosPorId = async (req, res) => {
 // Actualizar un producto existente
 exports.actualizarProducto = async (req, res) => {
     try {
+        const usuario = req.usuario;
+        const rol = req.rol;
+
         const data = req.body;
         const imagen = req.file;  // Accede al archivo cargado (si se incluye)
 
@@ -205,6 +214,8 @@ exports.actualizarProducto = async (req, res) => {
             Imagen: imagen ? imagen.filename : producto.Imagen 
         });
 
+        logger.info({ usuario: usuario, rol: rol }, 'Se actualizó el producto '+producto.Nombre)
+
         res.status(200).json(producto);
     } catch (error) {
         console.log(error);
@@ -216,15 +227,19 @@ exports.actualizarProducto = async (req, res) => {
 
 // Eliminar productos
 exports.eliminarProducto = async (req, res) => {
+    const usuario = req.usuario;
+    const rol = req.rol;
     try {
         const eliminar = await Productos.destroy({
             where: { IDProducto: req.params.id }  // Cambiado de IDSucursal a IDProducto
         });
         if (eliminar) {
+            logger.info({ usuario: usuario, rol: rol }, 'Se eliminó el producto con el id '+req.params.id)
             res.status(200).json({ message: 'Producto eliminado' });
         } else {
             res.status(404).json({ error: 'Producto no encontrado' });
         }
+        
     } catch (error) {
         res.status(500).json({ error: 'Error al eliminar el producto' });
     }

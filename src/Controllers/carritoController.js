@@ -1,13 +1,17 @@
 const connection = require('../conectionDB.js');
-const Carrito = require('../models/carritoModel.js');
-const Cliente = require('../models/clienteModel.js');
+const Carrito = require('../Models/carritoModel.js');
+const Cliente = require('../Models/clienteModel.js');
 const Productos = require('../Models/productosModel.js');
 const message = require('../utils/messages.js');
 const {Op, sequelize, where} = require('sequelize');
+const logger = require('../helpers/logger.js')
 
 exports.andirCarrito = async (req, res) => {
+    const IDCliente = req.id
+    const usuario = req.usuario;
+    const rol = req.rol;
     try {
-        const { IDCliente, IDProducto, CantidadProductos} = req.body;
+        const {IDProducto, CantidadProductos} = req.body;
 
         //verificar las existencias
         const cantidadProductos= parseInt(CantidadProductos);
@@ -46,10 +50,11 @@ exports.andirCarrito = async (req, res) => {
             console.log(carritoActualizadoPrecio, carritoActualizadoCantidad, productoActualizado);
             if (carritoActualizadoPrecio>0 && carritoActualizadoCantidad>0 && productoActualizado>0 )
             {
-                res.status(201).json("Se añadió el producto");
+                logger.info({ usuario: usuario, rol: rol }, 'Se añadió '+nombreProducto+' al carrito');
+                return res.status(201).json("Se añadió el producto");
             }
             else {
-                return res.status(500).json({ error: 'Error al añadir al carrito' });
+                return res.status(400).json({ message: 'El producto ya está en el carrito' });
             }
         }
         else{
@@ -76,8 +81,7 @@ exports.andirCarrito = async (req, res) => {
         const productoActualizadoExistencias = await Productos.update({ Existencias: nuevasExistenciasProducto}, {where: { IDProducto: IDProducto}});
         if (productoActualizadoExistencias>0 && nuevasExistenciasProducto)
             {
-                res.status(201).json("Se añadió el producto.");
-                res.status(201).json(nuevoCarrito);
+                return res.status(201).json("Se añadió el producto.");
             }
             else {
                 return res.status(500).json({ error: 'Error al añadir al carrito.'});
@@ -94,7 +98,9 @@ exports.andirCarrito = async (req, res) => {
 //eliminar del carrito
 exports.eliminarItem = async (req, res) => {
     try{
-        const idCliente = req.body.IDCliente;
+        const idCliente = req.id;
+        const usuario = req.usuario;
+        const rol = req.rol;
         const idProducto = req.params.id;
 
         const productoExiste= await Carrito.findOne({where:{ IDCliente: idCliente, IDProducto: idProducto}});
@@ -103,6 +109,7 @@ exports.eliminarItem = async (req, res) => {
         if (productoExiste) {
             const eliminarItem = await Carrito.destroy({where:{IDCliente: idCliente, IDProducto: idProducto}});
             console.log( eliminarItem );
+            logger.info({ usuario: usuario, rol: rol }, 'Se eliminó el producto '+productoExiste.Nombre+ 'Del carrito')
             res.status(200).json("Se eliminó el item del carrito.");
         } else {
             res.status(404).json({ error: 'Producto inexistente en el carrito.' });
@@ -117,7 +124,7 @@ exports.eliminarItem = async (req, res) => {
 //traer el carrito
 exports.traerCarrito = async (req, res) => {
     try{
-        const idCliente = req.body.IDCliente;
+        const idCliente = req.id;
 
         const itemsCarrito = await Carrito.findAll({where: { IDCliente: idCliente }, attributes: ['IDProducto', 'NombreProducto', 'CantidadProductos', 'PrecioUnitario', 'PrecioTotal'], raw: true });
 
@@ -137,7 +144,7 @@ exports.traerCarrito = async (req, res) => {
                 mensaje: mensaje
             });
         } else {
-            res.status(404).json({ message: 'No se encontraron procudctos en el carrito para este cliente.' });
+            res.status(404).json({ message: 'No se encontraron productos en el carrito para este cliente.' });
         }
     }catch (error) {
         console.log(error);

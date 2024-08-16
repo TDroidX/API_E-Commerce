@@ -3,6 +3,8 @@ const Sucursal = require('../models/sucursalModel.js');
 const message = require('../utils/messages.js');
 const { Op } = require('sequelize');
 const {messageGeneral} = message;
+const logger = require('../helpers/logger.js')
+
 const valNombre = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{5,50}$/;
 const valCalle = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{5,50}$/;
 const valNumero = /^[0-9]{1,4}$/;
@@ -25,6 +27,8 @@ exports.obtenerSucursales = async (req, res) => {
 
 // Crear una nueva sucursal
 exports.crearSucursal = async (req, res) => {
+    const usuario = req.usuario;
+    const rol = req.rol;
     try {
         const data = req.body;
 
@@ -36,7 +40,7 @@ exports.crearSucursal = async (req, res) => {
         }
 
         for (const field of allowedFields) {
-        if (!data[field] || data[field].trim() === "") {
+        if (!data[field]) {
             return messageGeneral(res, 400, false, "", `El campo ${field} no puede estar vacío.`);
         }
         }
@@ -93,6 +97,9 @@ exports.crearSucursal = async (req, res) => {
             Telefono: req.body.Telefono,
             Tipo: req.body.Tipo
         });
+
+        logger.info({ usuario: usuario, rol: rol }, 'Se registró la sucursal '+req.body.Nombre)
+
         res.status(201).json(nuevaSucursal);
     } catch (error) {
         console.log(error);
@@ -116,6 +123,8 @@ exports.obtenerSucursalPorId = async (req, res) => {
 
 // Actualizar una sucursal
 exports.actualizarSucursal = async (req, res) => {
+    const usuario = req.usuario;
+    const rol = req.rol;
     try {
 
         const data = req.body;
@@ -131,7 +140,7 @@ exports.actualizarSucursal = async (req, res) => {
         }
 
         for (const field of allowedFields) {
-            if (!data[field] || data[field].trim() === "") {
+            if (!data[field]) {
                 return messageGeneral(res, 400, false, "", `El campo ${field} no puede estar vacío.`);
             }
         }
@@ -189,6 +198,9 @@ exports.actualizarSucursal = async (req, res) => {
         });
         console.log(actualizado);
         const sucursalActualizada = await Sucursal.findByPk(req.params.id);
+
+        logger.info({ usuario: usuario, rol: rol }, 'Se actualizó la sucursal '+req.body.Nombre)
+
         res.json(sucursalActualizada);
     }
     else {
@@ -202,11 +214,14 @@ exports.actualizarSucursal = async (req, res) => {
 
 // Eliminar una sucursal
 exports.eliminarSucursal = async (req, res) => {
+    const usuario = req.usuario;
+    const rol = req.rol;
     try {
         const eliminado = await Sucursal.destroy({
             where: { IDSucursal: req.params.id }
         });
         if (eliminado) {
+            logger.info({ usuario: usuario, rol: rol }, 'Se eliminó la sucursal con el id '+req.params.id)
             res.status(200).json({ message: 'Sucursal eliminada' });
         } else {
             res.status(404).json({ error: 'Sucursal no encontrada' });
