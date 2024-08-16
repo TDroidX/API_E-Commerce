@@ -1,5 +1,5 @@
 const connection = require('../conectionDB.js');
-const Sucursal = require('../models/sucursalModel.js');
+const Sucursal = require('../Models/sucursalModel.js');
 const message = require('../utils/messages.js');
 const { Op } = require('sequelize');
 const {messageGeneral} = message;
