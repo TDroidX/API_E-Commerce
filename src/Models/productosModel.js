@@ -20,7 +20,7 @@ const productosModel = connection.define('productos', {
         allowNull: false
     },
     Piezas:{
-        type: DataTypes.SMALLINT,
+        type: DataTypes.STRING,
         allowNull: false
     },
     Precio:{
