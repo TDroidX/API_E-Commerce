@@ -126,7 +126,7 @@ const destroy = async (req, res) => {
 
 const logs = async (req, res) => {
     try {
-        const logs = await log.findAll();
+        const logs = await Log.findAll();
         res.status(200).json(logs);
     } catch (error) {
         res.status(400).json({ error: error.message });
