@@ -28,7 +28,7 @@ const productosModel = connection.define('productos', {
         allowNull: false
     },
     Sucursal:{
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     Marca:{
@@ -36,16 +36,15 @@ const productosModel = connection.define('productos', {
         allowNull: false
     },
     Existencias:{
-        type: DataTypes.INTEGER,
+        type: DataTypes.SMALLINT,
         allowNull: false
     },
     Categoria:{
         type: DataTypes.STRING,
         allowNull: false
     },
-    imagen:{
-        type: DataTypes.STRING,
-        allowNull: false
+    Imagen:{
+        type: DataTypes.STRING
     }
 }, 
 {
