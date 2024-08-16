@@ -80,8 +80,8 @@ exports.crearSesionDePago = async (req, res) => {
             payment_method_types: ['card'],
             line_items: lineItems,
             mode: 'payment',
-            success_url: `http://localhost:3000/api/carrito/finCompra`,
-            cancel_url: `http://localhost:3000/api/compras/cancel`,
+            success_url: `https://api-e-commerce-u7d9.onrender.com`,
+            cancel_url: `https://api-e-commerce-u7d9.onrender.com`,
         });
 
         // Devolver el ID de la sesión de pago
