@@ -35,7 +35,7 @@ exports.crearProductos = async (req, res) => {
 
         // Verifica si algún campo permitido está vacío
         for (const field of allowedFields) {
-            if (!data[field] || data[field].trim() === "") {
+            if (!data[field]) {
                 throw new Error(`El campo ${field} no puede estar vacío.`);
             }
         }

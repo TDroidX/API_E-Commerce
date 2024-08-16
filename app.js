@@ -11,7 +11,7 @@ const port = 3000;
 //const routerAdmin=require("./src/Routes/adminRoutes.js");
 const routerCarrito=require("./src/Routes/carritoRoutes.js");
 const routerCliente=require("./src/Routes/clienteRoutes");
-//const routerCompras=require("./src/Routes/comprasRoutes.js");
+const routerCompras=require("./src/Routes/comprasRoute.js");
 const routerProductos=require("./src/Routes/productosRoute");
 const routerSucursal=require("./src/Routes/sucursalRoutes");
 const routerLogin=require("./src/Routes/loginRoutes")
@@ -33,7 +33,7 @@ sequelize.sync()
 //app.use('/api/administrador', routerAdmin);
 app.use('/api/carrito',routerCarrito);
 app.use('/api/cliente',routerCliente);
-//app.use('/api/compras',routerCompras);
+app.use('/api/compras',routerCompras);
 app.use('/api/productos', routerProductos);
 app.use('/api/sucursal',routerSucursal);
 app.use('/api/sesion', routerLogin);

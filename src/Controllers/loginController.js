@@ -8,7 +8,7 @@ const login = async (req, res) => {
     const { usuario, password } = req.body;
 
     try {
-        let username = await Cliente.findOne({ usuario});
+        let username = await Cliente.findOne({ where: { Usuario: usuario }});
         if (!username) {
             return res.status(400).send('Usuario no existente');
         }
@@ -17,6 +17,7 @@ const login = async (req, res) => {
         if (!isMatch) {
             return res.status(400).send('Contraseña incorrecta');
         }
+        console.log("resultado:",isMatch)
 
         const token = jwt.sign({ id: username.IDCliente, rol: username.Rol, usuario: username.Usuario }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.cookie('token', token, { httpOnly: true });

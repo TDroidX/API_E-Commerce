@@ -1,12 +1,11 @@
 const express = require('express');
-const comprasController = require('../Controllers/comprasController.js');
-
 const router = express.Router();
+const comprasController = require('../Controllers/comprasController');
 
-// Obtener todas las compras (historial)
-router.get('/', comprasController.obtenerCompras);
+// Ruta para obtener todas las compras de un usuario
+router.get('/', comprasController.obtenerComprasPorUsuario);
 
-// Obtener una compra por ID
-router.get('/:id', comprasController.obtenerCompraPorId);
+// Ruta para obtener una compra específica de un usuario por IDCompra
+router.get('/:id', comprasController.obtenerCompraPorUsuarioYID);
 
 module.exports = router;

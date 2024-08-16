@@ -1,125 +1,127 @@
 const connection = require('../conectionDB.js');
 const Carrito = require('../Models/carritoModel.js');
 const Cliente = require('../Models/clienteModel.js');
+const Compras = require('../Models/comprasModel.js')
 const Productos = require('../Models/productosModel.js');
 const message = require('../utils/messages.js');
 const {Op, sequelize, where} = require('sequelize');
 const logger = require('../helpers/logger.js')
 
 exports.andirCarrito = async (req, res) => {
-    const IDCliente = req.id
+    const IDCliente = req.id;
     const usuario = req.usuario;
     const rol = req.rol;
+
     try {
-        const {IDProducto, CantidadProductos} = req.body;
+        const { IDProducto, CantidadProductos } = req.body;
 
-        //verificar las existencias
-        const cantidadProductos= parseInt(CantidadProductos);
-        const existenciasConsulta = await Productos.findOne({where: { IDProducto: IDProducto }, attributes: ['Existencias'], raw: true });
-        const existenciasProducto = existenciasConsulta ? existenciasConsulta.Existencias : null;
-        const existencias= parseInt(existenciasProducto);
-
-        //traer nombre de producto
-        const producto = await Productos.findOne({where: { IDProducto: IDProducto }, attributes: ['Nombre'], raw: true });
-        console.log(producto); 
-        const nombreProducto = producto ? producto.Nombre : null;
-        console.log(nombreProducto); 
-
-        if(cantidadProductos > existencias || existencias==0)
-        {
-            return res.status(400).json({ error: `Existencias insuficientes. Solo hay ${existencias} unidades disponibles de ${nombreProducto}.`});
-        }
-        else
-        {
-
-        //hacer que se añada al producto que ya está en el carrito
-        const productoEnCarrito = await Carrito.findOne({where: { IDProducto: IDProducto, IDCliente: IDCliente}, attributes: ['PrecioUnitario', 'CantidadProductos'], raw: true});
-        if(productoEnCarrito)
-        {
-            const precioProductoCarrito = parseFloat(productoEnCarrito ? productoEnCarrito.PrecioUnitario : null);
-            const cantidadProductoCarrito = parseInt( productoEnCarrito ? productoEnCarrito.CantidadProductos : null);
-            const nuevaCantidad = parseInt(cantidadProductoCarrito + cantidadProductos);
-            console.log(nuevaCantidad);
-            const nuevoPrecioTotal = parseFloat((nuevaCantidad * precioProductoCarrito).toFixed(2));
-            console.log(nuevoPrecioTotal);
-            const nuevasExistencias= existencias - cantidadProductos;
-            console.log(nuevasExistencias);
-            const carritoActualizadoPrecio = await Carrito.update({ PrecioTotal: nuevoPrecioTotal }, {where: { IDProducto: IDProducto, IDCliente: IDCliente}});
-            const carritoActualizadoCantidad = await Carrito.update({ CantidadProductos: nuevaCantidad }, {where: { IDProducto: IDProducto, IDCliente: IDCliente}});
-            const productoActualizado = await Productos.update({ Existencias: nuevasExistencias}, {where: { IDProducto: IDProducto}});
-            console.log(carritoActualizadoPrecio, carritoActualizadoCantidad, productoActualizado);
-            if (carritoActualizadoPrecio>0 && carritoActualizadoCantidad>0 && productoActualizado>0 )
-            {
-                logger.info({ usuario: usuario, rol: rol }, 'Se añadió '+nombreProducto+' al carrito');
-                return res.status(201).json("Se añadió el producto");
-            }
-            else {
-                return res.status(400).json({ message: 'El producto ya está en el carrito' });
-            }
-        }
-        else{
-        //traer precio de producto
-        const precio = await Productos.findOne({where: { IDProducto: IDProducto }, attributes: ['Precio'], raw: true });
-        console.log(producto); 
-        const precioU = precio ? precio.Precio : null;
-        console.log(precioU); 
-
-        //calcular precio total
-        const precioUnitario= parseFloat(precioU);
-        let precioTotal= precioUnitario*cantidadProductos
-
-        const nuevoCarrito = await Carrito.create({
-            IDCliente : IDCliente,
-            IDProducto: IDProducto,          
-            NombreProducto: nombreProducto,
-            CantidadProductos: cantidadProductos,
-            PrecioUnitario : precioUnitario,
-            PrecioTotal: precioTotal
+        const cantidadProductos = parseInt(CantidadProductos);
+        const producto = await Productos.findOne({
+            where: { IDProducto: IDProducto },
+            attributes: ['Nombre', 'Existencias', 'Precio'],
+            raw: true
         });
-        const nuevasExistenciasProducto= existencias - cantidadProductos;
-            console.log(nuevasExistenciasProducto);
-        const productoActualizadoExistencias = await Productos.update({ Existencias: nuevasExistenciasProducto}, {where: { IDProducto: IDProducto}});
-        if (productoActualizadoExistencias>0 && nuevasExistenciasProducto)
-            {
-                return res.status(201).json("Se añadió el producto.");
-            }
-            else {
-                return res.status(500).json({ error: 'Error al añadir al carrito.'});
-            }
-        res.status(201).json(nuevoCarrito);
+
+        if (!producto) {
+            return res.status(404).json({ error: 'Producto no encontrado' });
         }
+
+        const { Nombre: nombreProducto, Existencias: existenciasProducto, Precio: precioU } = producto;
+        const existencias = parseInt(existenciasProducto);
+
+        if (cantidadProductos > existencias || existencias == 0) {
+            return res.status(400).json({
+                error: `Existencias insuficientes. Solo hay ${existencias} unidades disponibles de ${nombreProducto}.`
+            });
+        }
+
+        const productoEnCarrito = await Carrito.findOne({
+            where: { IDProducto: IDProducto, IDCliente: IDCliente },
+            attributes: ['PrecioUnitario', 'CantidadProductos'],
+            raw: true
+        });
+
+        let carritoActualizado;
+
+        if (productoEnCarrito) {
+            const nuevaCantidad = productoEnCarrito.CantidadProductos + cantidadProductos;
+            const nuevoPrecioTotal = parseFloat((nuevaCantidad * productoEnCarrito.PrecioUnitario).toFixed(2));
+            const nuevasExistencias = existencias - cantidadProductos;
+
+            carritoActualizado = await Carrito.update({
+                CantidadProductos: nuevaCantidad,
+                PrecioTotal: nuevoPrecioTotal
+            }, { where: { IDProducto: IDProducto, IDCliente: IDCliente } });
+
+            await Productos.update({ Existencias: nuevasExistencias }, { where: { IDProducto: IDProducto } });
+        } else {
+            const precioUnitario = parseFloat(precioU);
+            const precioTotal = parseFloat((precioUnitario * cantidadProductos).toFixed(2));
+            const nuevasExistenciasProducto = existencias - cantidadProductos;
+
+            carritoActualizado = await Carrito.create({
+                IDCliente: IDCliente,
+                IDProducto: IDProducto,
+                NombreProducto: nombreProducto,
+                CantidadProductos: cantidadProductos,
+                PrecioUnitario: precioUnitario,
+                PrecioTotal: precioTotal
+            });
+
+            await Productos.update({ Existencias: nuevasExistenciasProducto }, { where: { IDProducto: IDProducto } });
+        }
+
+        if (carritoActualizado) {
+            logger.info({ usuario: usuario, rol: rol }, `Se añadió ${nombreProducto} al carrito`);
+            return res.status(201).json("Producto añadido al carrito");
+        } else {
+            return res.status(500).json({ error: 'Error al añadir al carrito.' });
         }
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Error al añadir al carrito.'});
+        res.status(500).json({ error: 'Error al añadir al carrito.' });
     }
 };
 
 //eliminar del carrito
 exports.eliminarItem = async (req, res) => {
-    try{
+    try {
         const idCliente = req.id;
         const usuario = req.usuario;
         const rol = req.rol;
         const idProducto = req.params.id;
 
-        const productoExiste= await Carrito.findOne({where:{ IDCliente: idCliente, IDProducto: idProducto}});
-        console.log(productoExiste);
+        // Buscar el producto en el carrito incluyendo el nombre
+        const productoExiste = await Carrito.findOne({
+            where: { IDCliente: idCliente, IDProducto: idProducto },
+            attributes: ['NombreProducto']
+        });
 
         if (productoExiste) {
-            const eliminarItem = await Carrito.destroy({where:{IDCliente: idCliente, IDProducto: idProducto}});
-            console.log( eliminarItem );
-            logger.info({ usuario: usuario, rol: rol }, 'Se eliminó el producto '+productoExiste.Nombre+ 'Del carrito')
-            res.status(200).json("Se eliminó el item del carrito.");
+            // Eliminar el producto del carrito
+            const eliminarItem = await Carrito.destroy({
+                where: { IDCliente: idCliente, IDProducto: idProducto }
+            });
+
+            // Verificar si la eliminación fue exitosa
+            if (eliminarItem > 0) {
+                logger.info(
+                    { usuario: usuario, rol: rol },
+                    `Se eliminó el producto ${productoExiste.Nombre} del carrito`
+                );
+                res.status(200).json("Se eliminó el item del carrito.");
+            } else {
+                res.status(500).json({ error: 'Error al eliminar el item del carrito.' });
+            }
         } else {
             res.status(404).json({ error: 'Producto inexistente en el carrito.' });
         }
 
-    }catch (error) {
+    } catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Error al eliminar item del carrito.'});
+        res.status(500).json({ error: 'Error al eliminar item del carrito.' });
     }
-}
+};
 
 //traer el carrito
 exports.traerCarrito = async (req, res) => {
@@ -137,7 +139,7 @@ exports.traerCarrito = async (req, res) => {
                 costoTotal += item.PrecioTotal;
             });
 
-            const mensaje = `El carrito contiene un total de ${totalProductos} productos con un costo total de $${costoTotal.toFixed(2)}.`;
+            const mensaje = `El carrito contiene un total de ${totalProductos} productos con un costo total de ${costoTotal}.`;
 
             res.status(200).json({
                 items: itemsCarrito,
@@ -151,3 +153,60 @@ exports.traerCarrito = async (req, res) => {
         res.status(500).json({ error: 'Error al traer el carrito.'});
     }
 }
+
+exports.realizarCompra = async (req, res) => {
+    const IDCliente = req.id;
+    const usuario = req.usuario;
+    const rol = req.rol;
+    
+    try {
+        // Traer los items del carrito
+        const itemsCarrito = await Carrito.findAll({ where: { IDCliente: IDCliente }, raw: true });
+
+        if (itemsCarrito.length === 0) {
+            return res.status(404).json({ message: 'El carrito está vacío.' });
+        }
+
+        // Calcular totales y preparar datos para la tabla de compras
+        let subtotal = 0;
+        let articulosTotales = 0;
+        let costoEnvio = 150; 
+        let iva = 0.16;       
+        let total = 0;
+
+        const compras = itemsCarrito.map(item => {
+            const precioTotalProducto = item.PrecioTotal;
+            subtotal += precioTotalProducto;
+            articulosTotales += item.CantidadProductos;
+
+            return {
+                Fecha_Hora: new Date(),
+                IDSucursal: item.IDSucursal || 1, // Sustituir por el ID correcto
+                IDCliente: IDCliente,
+                IDProducto: item.IDProducto,
+                NombreProducto: item.NombreProducto,
+                CantidadProductos: item.CantidadProductos,
+                PrecioUnitario: item.PrecioUnitario,
+                PrecioTotal: precioTotalProducto,
+                ArticulosTotales: item.CantidadProductos,
+                Subtotal: subtotal,
+                IVA: subtotal * iva,
+                CostoEnvio: costoEnvio,
+                Total: subtotal + (subtotal * iva) + costoEnvio
+            };
+        });
+
+        // Registrar las compras en la base de datos
+        await Compras.bulkCreate(compras);
+
+        // Vaciar el carrito
+        await Carrito.destroy({ where: { IDCliente: IDCliente } });
+
+        logger.info({ usuario: usuario, rol: rol }, `El usuario ha realizado una compra y se vació su carrito.`);
+
+        res.status(201).json({ message: 'Compra realizada con éxito y carrito vaciado.' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Error al realizar la compra.' });
+    }
+};
