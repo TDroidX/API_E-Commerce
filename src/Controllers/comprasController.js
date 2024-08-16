@@ -5,6 +5,11 @@ const { Op } = require('sequelize');
 exports.obtenerComprasPorUsuario = async (req, res) => {
     const IDCliente = req.id;  // Suponiendo que `req.id` contiene el ID del usuario autenticado
 
+    if (!IDCliente) {
+        return res.status(400).json({ error: 'IDCliente no proporcionado.' });
+    }
+
+
     try {
         const compras = await Compras.findAll({ where: { IDCliente: IDCliente } });
         if (compras.length === 0) {
