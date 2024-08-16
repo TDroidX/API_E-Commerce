@@ -65,7 +65,8 @@ exports.andirCarrito = async (req, res) => {
                 NombreProducto: nombreProducto,
                 CantidadProductos: cantidadProductos,
                 PrecioUnitario: precioUnitario,
-                PrecioTotal: precioTotal
+                PrecioTotal: precioTotal,
+                ArticulosTotales: cantidadProductos // Asegúrate de que este campo esté presente
             });
 
             await Productos.update({ Existencias: nuevasExistenciasProducto }, { where: { IDProducto: IDProducto } });
