@@ -1,4 +1,5 @@
 const Cliente = require('../Models/clienteModel');
+const Log = require('../Models/logsModel')
 const bcrypt = require('bcrypt')
 const logger = require('../helpers/logger')
 require('dotenv').config()
@@ -123,10 +124,20 @@ const destroy = async (req, res) => {
     }
 };
 
+const logs = async (req, res) => {
+    try {
+        const logs = await log.findAll();
+        res.status(200).json(logs);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 module.exports = {
     show,
     find,
     store,
     update,
-    destroy
+    destroy,
+    logs
 }

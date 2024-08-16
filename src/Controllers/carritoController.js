@@ -59,6 +59,9 @@ exports.andirCarrito = async (req, res) => {
             const precioTotal = parseFloat((precioUnitario * cantidadProductos).toFixed(2));
             const nuevasExistenciasProducto = existencias - cantidadProductos;
 
+            // Aquí podrías calcular el total (si es diferente del precioTotal)
+            const total = precioTotal; // Si es lo mismo, o lo que sea necesario calcular
+
             carritoActualizado = await Carrito.create({
                 IDCliente: IDCliente,
                 IDProducto: IDProducto,
@@ -66,7 +69,8 @@ exports.andirCarrito = async (req, res) => {
                 CantidadProductos: cantidadProductos,
                 PrecioUnitario: precioUnitario,
                 PrecioTotal: precioTotal,
-                ArticulosTotales: cantidadProductos // Asegúrate de que este campo esté presente
+                ArticulosTotales: cantidadProductos,
+                Total: total // Asegúrate de que este campo esté presente
             });
 
             await Productos.update({ Existencias: nuevasExistenciasProducto }, { where: { IDProducto: IDProducto } });

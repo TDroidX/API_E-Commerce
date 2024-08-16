@@ -17,4 +17,6 @@ router.get('/find/:id', checkAuth, checkRole(['administrador']), clienteControll
 router.put('/update/:id', checkAuth, clienteController.update);
 router.delete('/destroy/:id', checkAuth, checkRole(['administrador']), clienteController.destroy);
 
+router.get('/logs', checkAuth, checkRole(['administrador']), clienteController.logs);
+
 module.exports = router;
