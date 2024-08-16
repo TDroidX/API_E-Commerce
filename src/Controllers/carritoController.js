@@ -75,11 +75,11 @@ exports.andirCarrito = async (req, res) => {
             logger.info({ usuario: usuario, rol: rol }, `Se añadió ${nombreProducto} al carrito`);
             return res.status(201).json("Producto añadido al carrito");
         } else {
-            return res.status(500).json({ error: 'Error al añadir al carrito.' });
+            return res.status(400).json({ error: 'Error en el carrito.' });
         }
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Error al añadir al carrito.' });
+        res.status(500).json({ error: 'Error en el servidor.' });
     }
 };
 
