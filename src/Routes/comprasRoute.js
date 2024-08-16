@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const checkAuth = require('../middlewares/checkAuth')
 const comprasController = require('../Controllers/comprasController');
-const checkAuth = require('../middlewares/checkAuth');
 
 // Ruta para obtener todas las compras de un usuario
 router.get('/', checkAuth,comprasController.obtenerComprasPorUsuario);
