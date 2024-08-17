@@ -77,9 +77,9 @@ exports.crearProductos = async (req, res) => {
             throw new Error("El campo Categoría es inválido, debe contener entre 5 y 50 letras sin caracteres especiales.");
         }
 
-        if (!imagen) {
-            throw new Error("El campo Imagen es obligatorio.");
-        }
+        // if (!imagen) {
+        //     throw new Error("El campo Imagen es obligatorio.");
+        // }
 
         // Crear el nuevo producto
         const nuevoProducto = await Productos.create({
@@ -190,9 +190,9 @@ exports.actualizarProducto = async (req, res) => {
         }
 
         // Si se incluye una imagen, valida su existencia
-        if (imagen && !valImagen.test(imagen.filename)) {
-            throw new Error("El campo Imagen es inválido.");
-        }
+        // if (imagen && !valImagen.test(imagen.filename)) {
+        //     throw new Error("El campo Imagen es inválido.");
+        // }
 
         // Buscar el producto a actualizar
         const producto = await Productos.findByPk(req.params.id);
