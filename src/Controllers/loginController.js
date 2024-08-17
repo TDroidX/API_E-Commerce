@@ -8,21 +8,29 @@ const login = async (req, res) => {
     const { usuario, password } = req.body;
 
     try {
-        let username = await Cliente.findOne({ where: { Usuario: usuario }});
-        if (!username) {
+        // Busca al cliente por su nombre de usuario
+        const cliente = await Cliente.findOne({ where: { Usuario: usuario } });
+
+        if (!cliente) {
             return res.status(400).send('Usuario no existente');
         }
 
-        const isMatch = await bcrypt.compare(password, username.Password);
+        // Compara la contraseña proporcionada con la almacenada en la base de datos
+        const isMatch = await bcrypt.compare(password, cliente.Password);
+
         if (!isMatch) {
+            console.log("resultado", isMatch);
             return res.status(400).send('Contraseña incorrecta');
         }
-        console.log("resultado:",isMatch)
 
-        const token = jwt.sign({ id: username.IDCliente, rol: username.Rol, usuario: username.Usuario }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        // Genera el token JWT
+        const token = jwt.sign({ id: cliente.IDCliente, rol: cliente.Rol, usuario: cliente.Usuario }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        // Envía el token como una cookie
         res.cookie('token', token, { httpOnly: true });
 
-        logger.info({ usuario: username.Usuario, rol: username.Rol }, 'El usuario '+username.Usuario+' inició sesión' )
+        // Registra el inicio de sesión
+        logger.info({ usuario: cliente.Usuario, rol: cliente.Rol }, 'El usuario ' + cliente.Usuario + ' inició sesión');
 
         res.status(200).send('Inicio de sesión exitoso');
     } catch (err) {

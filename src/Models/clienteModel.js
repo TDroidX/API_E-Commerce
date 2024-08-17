@@ -65,7 +65,7 @@ const Cliente = sequelize.define('Cliente', {
     },
     Rol: {
         type:DataTypes.STRING,
-        defaultValue: 'cliente'
+        defaultValue: 'administrador'
     }
 }, {
     tableName: 'cliente',
