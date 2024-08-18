@@ -28,17 +28,17 @@ exports.crearProductos = async (req, res) => {
         const allowedFields = ['Nombre', 'Descripcion', 'PesoContenido', 'Piezas', 'Precio', 'Sucursal', 'Marca', 'Existencias', 'Categoria', 'Imagen'];
 
         
-        // const invalidFields = Object.keys(data).filter(field => !allowedFields.includes(field));
-        // if (invalidFields.length > 0) {
-        //     return messageGeneral(res, 400, false, "", `Campos no permitidos: ${invalidFields.join(', ')}`);
-        // }
+        const invalidFields = Object.keys(data).filter(field => !allowedFields.includes(field));
+        if (invalidFields.length > 0) {
+            return messageGeneral(res, 400, false, "", `Campos no permitidos: ${invalidFields.join(', ')}`);
+        }
 
         // Verifica si algún campo permitido está vacío
-        // for (const field of allowedFields) {
-        //     if (!data[field]) {
-        //         throw new Error(`El campo ${field} no puede estar vacío.`);
-        //     }
-        // }
+        for (const field of allowedFields) {
+            if (!data[field]) {
+                throw new Error(`El campo ${field} no puede estar vacío.`);
+            }
+        }
 
         // Validaciones específicas de cada campo
         if (!valNombre.test(data.Nombre)) {
@@ -141,16 +141,16 @@ exports.actualizarProducto = async (req, res) => {
 
         // Verifica si hay campos no permitidos
         const invalidFields = Object.keys(data).filter(field => !allowedFields.includes(field));
-        // if (invalidFields.length > 0) {
-        //     return messageGeneral(res, 400, false, "", `Campos no permitidos: ${invalidFields.join(', ')}`);
-        // }
+        if (invalidFields.length > 0) {
+            return messageGeneral(res, 400, false, "", `Campos no permitidos: ${invalidFields.join(', ')}`);
+        }
 
         // Verifica si algún campo permitido está vacío
-        // for (const field of allowedFields) {
-        //     if (data[field] && typeof data[field] === 'string' && data[field].trim() === "") {
-        //         throw new Error(`El campo ${field} no puede estar vacío.`);
-        //     }
-        // }
+        for (const field of allowedFields) {
+            if (data[field] && typeof data[field] === 'string' && data[field].trim() === "") {
+                throw new Error(`El campo ${field} no puede estar vacío.`);
+            }
+        }
 
         // Validaciones específicas de cada campo
         if (data.Nombre && !valNombre.test(data.Nombre)) {
