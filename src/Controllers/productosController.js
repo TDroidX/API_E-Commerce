@@ -25,7 +25,7 @@ exports.crearProductos = async (req, res) => {
         const data = req.body;
         const imagen = req.file;  
 
-        const allowedFields = ['Nombre', 'Descripcion', 'PesoContenido', 'Piezas', 'Precio', 'Sucursal', 'Marca', 'Existencias', 'Categoria'];
+        const allowedFields = ['Nombre', 'Descripcion', 'PesoContenido', 'Piezas', 'Precio', 'Sucursal', 'Marca', 'Existencias', 'Categoria', 'Imagen'];
 
         
         const invalidFields = Object.keys(data).filter(field => !allowedFields.includes(field));
@@ -77,7 +77,9 @@ exports.crearProductos = async (req, res) => {
             throw new Error("El campo Categoría es inválido, debe contener entre 5 y 50 letras sin caracteres especiales.");
         }
 
-
+        if (!imagen) {
+            throw new Error("El campo Imagen es obligatorio.");
+        }
 
         // Crear el nuevo producto
         const nuevoProducto = await Productos.create({
@@ -136,6 +138,36 @@ exports.obtenerProductosPorCategoria = async (req, res) => {
         });
 
         res.json({ [categoria]: productos });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Error al obtener los productos por categoría' });
+    }
+};
+
+// Obtener productos por categoría
+exports.obtenerProductosPorCategoria = async (req, res) => {
+    try {
+        const categorias = [
+            'chocolates',
+            'tamarindos',
+            'paletas',
+            'gomitas',
+            'botana',
+            'chicles',
+            'galletas',
+            'bombón'
+        ];
+
+        const productosPorCategoria = {};
+
+        for (const categoria of categorias) {
+            const productos = await Productos.findAll({
+                where: { Categoria: categoria }
+            });
+            productosPorCategoria[categoria] = productos;
+        }
+
+        res.json(productosPorCategoria);
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Error al obtener los productos por categoría' });
