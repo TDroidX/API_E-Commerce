@@ -25,7 +25,7 @@ exports.crearProductos = async (req, res) => {
         const data = req.body;
         const imagen = req.file;  
 
-        const allowedFields = ['Nombre', 'Descripcion', 'PesoContenido', 'Piezas', 'Precio', 'Sucursal', 'Marca', 'Existencias', 'Categoria', 'Imagen'];
+        const allowedFields = ['Nombre', 'Descripcion', 'PesoContenido', 'Piezas', 'Precio', 'Sucursal', 'Marca', 'Existencias', 'Categoria'];
 
         
         const invalidFields = Object.keys(data).filter(field => !allowedFields.includes(field));
@@ -77,9 +77,7 @@ exports.crearProductos = async (req, res) => {
             throw new Error("El campo Categoría es inválido, debe contener entre 5 y 50 letras sin caracteres especiales.");
         }
 
-        if (!imagen) {
-            throw new Error("El campo Imagen es obligatorio.");
-        }
+
 
         // Crear el nuevo producto
         const nuevoProducto = await Productos.create({
