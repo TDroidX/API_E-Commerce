@@ -12,5 +12,7 @@ router.post('/', checkAuth, checkRole(['administrador']), upload.single('Imagen'
 router.get('/:id', productosController.obtenerProductosPorId);
 router.put('/:id', checkAuth, checkRole(['administrador']), productosController.actualizarProducto);
 router.delete('/:id', checkAuth, checkRole(['administrador']), productosController.eliminarProducto);
+router.get('/categorias', productosController.obtenerProductosPorCategoria);
+
 
 module.exports = router;

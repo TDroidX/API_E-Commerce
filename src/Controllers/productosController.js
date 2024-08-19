@@ -128,6 +128,36 @@ exports.obtenerProductosPorId = async (req, res) => {
     }
 };
 
+// Obtener productos por categoría
+exports.obtenerProductosPorCategoria = async (req, res) => {
+    try {
+        const categorias = [
+            'chocolates',
+            'tamarindos',
+            'paletas',
+            'gomitas',
+            'botana',
+            'chicles',
+            'galletas',
+            'bombón'
+        ];
+
+        const productosPorCategoria = {};
+
+        for (const categoria of categorias) {
+            const productos = await Productos.findAll({
+                where: { Categoria: categoria }
+            });
+            productosPorCategoria[categoria] = productos;
+        }
+
+        res.json(productosPorCategoria);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Error al obtener los productos por categoría' });
+    }
+};
+
 // Actualizar un producto existente
 exports.actualizarProducto = async (req, res) => {
     try {
