@@ -129,27 +129,13 @@ exports.obtenerProductosPorId = async (req, res) => {
 // Obtener productos por categoría
 exports.obtenerProductosPorCategoria = async (req, res) => {
     try {
-        const categorias = [
-            'chocolates',
-            'tamarindos',
-            'paletas',
-            'gomitas',
-            'botana',
-            'chicles',
-            'galletas',
-            'bombón'
-        ];
+        const categoria = req.params.categoria;
 
-        const productosPorCategoria = {};
+        const productos = await Productos.findAll({
+            where: { Categoria: categoria }
+        });
 
-        for (const categoria of categorias) {
-            const productos = await Productos.findAll({
-                where: { Categoria: categoria }
-            });
-            productosPorCategoria[categoria] = productos;
-        }
-
-        res.json(productosPorCategoria);
+        res.json({ [categoria]: productos });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Error al obtener los productos por categoría' });
