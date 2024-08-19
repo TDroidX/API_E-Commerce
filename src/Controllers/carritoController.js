@@ -29,7 +29,7 @@ exports.andirCarrito = async (req, res) => {
         const { Nombre: nombreProducto, Existencias: existenciasProducto, Precio: precioU } = producto;
         const existencias = parseInt(existenciasProducto);
 
-        if (cantidadProductos > existencias || existencias == 0) {
+        if (cantidadProductos > existencias || existencias === 0) {
             return res.status(400).json({
                 error: `Existencias insuficientes. Solo hay ${existencias} unidades disponibles de ${nombreProducto}.`
             });
@@ -59,9 +59,6 @@ exports.andirCarrito = async (req, res) => {
             const precioTotal = parseFloat((precioUnitario * cantidadProductos).toFixed(2));
             const nuevasExistenciasProducto = existencias - cantidadProductos;
 
-            // Aquí podrías calcular el total (si es diferente del precioTotal)
-            const total = precioTotal; // Si es lo mismo, o lo que sea necesario calcular
-
             carritoActualizado = await Carrito.create({
                 IDCliente: IDCliente,
                 IDProducto: IDProducto,
@@ -70,7 +67,7 @@ exports.andirCarrito = async (req, res) => {
                 PrecioUnitario: precioUnitario,
                 PrecioTotal: precioTotal,
                 ArticulosTotales: cantidadProductos,
-                Total: total // Asegúrate de que este campo esté presente
+                Total: precioTotal // Se asegura que este campo esté presente y correcto
             });
 
             await Productos.update({ Existencias: nuevasExistenciasProducto }, { where: { IDProducto: IDProducto } });
@@ -87,6 +84,7 @@ exports.andirCarrito = async (req, res) => {
         res.status(500).json({ error: 'Error en el servidor.' });
     }
 };
+
 
 //eliminar del carrito
 exports.eliminarItem = async (req, res) => {
