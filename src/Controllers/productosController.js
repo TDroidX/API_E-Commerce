@@ -25,20 +25,20 @@ exports.crearProductos = async (req, res) => {
         const data = req.body;
         const imagen = req.file;  
 
-        const allowedFields = ['Nombre', 'Descripcion', 'PesoContenido', 'Piezas', 'Precio', 'Sucursal', 'Marca', 'Existencias', 'Categoria', 'Imagen'];
+        // const allowedFields = ['Nombre', 'Descripcion', 'PesoContenido', 'Piezas', 'Precio', 'Sucursal', 'Marca', 'Existencias', 'Categoria', 'Imagen'];
 
         
-        const invalidFields = Object.keys(data).filter(field => !allowedFields.includes(field));
-        if (invalidFields.length > 0) {
-            return messageGeneral(res, 400, false, "", `Campos no permitidos: ${invalidFields.join(', ')}`);
-        }
+        // const invalidFields = Object.keys(data).filter(field => !allowedFields.includes(field));
+        // if (invalidFields.length > 0) {
+        //     return messageGeneral(res, 400, false, "", `Campos no permitidos: ${invalidFields.join(', ')}`);
+        // }
 
         // Verifica si algún campo permitido está vacío
-        for (const field of allowedFields) {
-            if (!data[field]) {
-                throw new Error(`El campo ${field} no puede estar vacío.`);
-            }
-        }
+        // for (const field of allowedFields) {
+        //     if (!data[field]) {
+        //         throw new Error(`El campo ${field} no puede estar vacío.`);
+        //     }
+        // }
 
         // Validaciones específicas de cada campo
         if (!valNombre.test(data.Nombre)) {
@@ -77,9 +77,9 @@ exports.crearProductos = async (req, res) => {
             throw new Error("El campo Categoría es inválido, debe contener entre 5 y 50 letras sin caracteres especiales.");
         }
 
-        if (!imagen) {
-            throw new Error("El campo Imagen es obligatorio.");
-        }
+        // if (!imagen) {
+        //     throw new Error("El campo Imagen es obligatorio.");
+        // }
 
         // Crear el nuevo producto
         const nuevoProducto = await Productos.create({
